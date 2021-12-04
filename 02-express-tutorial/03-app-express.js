@@ -1,69 +1,31 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const app = express();
+const port = 5000;
 
-const appIndexFile = fs.readFileSync('./navbar-app/index.html');
-const stylesFile = fs.readFileSync('./navbar-app/styles.css');
-const logoFile = fs.readFileSync('./navbar-app/logo.svg');
-const logicFile = fs.readFileSync('./navbar-app/browser-app.js');
-
-const server = http.createServer((req, res) => {
-    logServerHit(req);
-
-    routeRequest(req, res);            
+app.get('/', (req, res) => {
+    console.log('User hit ' + req.url);
+    res.send('Home Page');
+    // res.status(200).send('Home Page');
 });
 
-function logServerHit(req) {
-    let date = new Date();
-    let logHit = date.toDateString() + ' - ' + date.toTimeString();
-    // console.log(`Server hit at ${logHit}`);
+app.get('/home', (req, res) => {
+    console.log('User hit ' + req.url);
+    res.status(200).send('Home Page');
+});
 
-    console.log(req.url);
-}
+app.get('/about', (req, res) => {
+    console.log('User hit ' + req.url);
+    res.status(200).send('About Page');
+});
 
-function routeRequest(req, res) {
-    switch (req.url) {
-        case '/':
-        case '/home':
-            res.writeHead(200,{'content-type': 'text/html'});
-            res.write('<h1>HOME PAGE</h1>');
-            res.end();
-            break;
-        case '/about':
-            res.writeHead(200,{'content-type': 'text/html'});
-            res.write('<h1>ABOUT PAGE</h1>');
-            res.end();
-            break;
-        case '/app':
-            res.writeHead(200,{'content-type': 'text/html'});
-            res.write(appIndexFile);
-            res.end();
-            break;
-        case '/styles.css':            
-            res.writeHead(200,{'content-type': 'text/css'});
-            res.write(stylesFile);
-            res.end();
-            break;
-        case '/logo.svg':            
-            res.writeHead(200,{'content-type': 'image/svg+xml'});
-            res.write(logoFile);
-            res.end();
-            break;
-        case '/browser-app.js':            
-            res.writeHead(200,{'content-type': 'text/javascript'});
-            res.write(logicFile);
-            res.end();
-            break;
-        default:
-            res.writeHead(404,{'content-type': 'text/html'});
-            res.write('<h1>PAGE NOT FOUND</h1>');
-            res.end();
-            break;
-    }
-}
+app.all('/time', (req, res) => {
+    res.status(404).send('<h1>Time not found</h1>');
+});
 
-try {
-    server.listen(5000);
-    console.log('Server running on port 5000');
-} catch (err) {
-    console.log(`Cannot start server. Error: ${err}`);
-}
+app.all('*', (req, res) => {
+    res.status(404).send('<h1>Resource not found</h1>');
+});
+
+app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+});
