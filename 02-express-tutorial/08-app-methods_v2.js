@@ -41,9 +41,11 @@ app.put('/api/people/:id', (req, res) => {
     // console.log(id);
     // console.log(name);
 
-    const targetObj = data.people.find((obj) => {
-        if (obj.id === Number(id)) return obj;
-    });
+    // const targetObj = data.people.find((obj) => {
+    //     if (obj.id === Number(id)) return obj;
+    // });
+
+    const targetObj = data.people.find((obj) => obj.id === Number(id));
 
     if (name && targetObj) {
         const oldName = targetObj.name;
@@ -71,6 +73,25 @@ app.put('/api/people/:id', (req, res) => {
             return res.end();
         }
     }    
+});
+
+app.delete('/api/people/:id', (req, res) => {
+    const { id } = req.params;
+    
+    const targetObj = data.people.find((obj) => obj.id === Number(id));
+    if (targetObj) {
+        data.people = data.people.filter(obj => obj.id != Number(id));
+        res.status(200).json({
+            success: true            
+        });
+        return res.end();    
+    } else {
+        res.status(404).json({
+            success: false,
+            message: 'targetObj not found'
+        });
+        return res.end();
+    }
 });
 
 // using routes
